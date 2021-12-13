@@ -1,5 +1,5 @@
 defmodule LibexampleTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   use Libexample, otp_app: :libexample
 
   import Mox

@@ -1,6 +1,15 @@
 defmodule Libexample do
   @moduledoc """
-  Documentation for `Libexample`.
+
+  Implements this module with `Kernel.use/2`
+
+  Usage:
+
+  ```
+  defmodule MyApp.MyModule do
+    use Libexample, otp_app: :my_app
+  end
+  ```
   """
 
   defmacro __using__(opts) do
@@ -9,14 +18,15 @@ defmodule Libexample do
     quote do
       @behaviour Libexample
       def list_pull_requests(owner, repository) do
-        Libexample.RealGithubClient.list_pull_requests({user(), token()}, owner, repository)
+        implementing().list_pull_requests(config(), owner, repository)
       end
-
-      defp token, do: Keyword.fetch!(config(), :token)
-      defp user, do: Keyword.fetch!(config(), :user)
 
       defp config do
         config = Application.fetch_env!(unquote(otp_app), __MODULE__)
+      end
+
+      defp implementing do
+        Keyword.get(config(), :implementing_module, Libexample.RealGithubClient)
       end
     end
   end

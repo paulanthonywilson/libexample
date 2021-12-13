@@ -1,5 +1,5 @@
 defmodule Libexample.RealGithubClientTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias Libexample.RealGithubClient
   import Mox
@@ -14,7 +14,7 @@ defmodule Libexample.RealGithubClientTest do
       {:ok, %HTTPoison.Response{status_code: 200, body: Jason.encode!([])}}
     end)
 
-    RealGithubClient.list_pull_requests({"bob", "token"}, "mavis", "things")
+    RealGithubClient.list_pull_requests([user: "bob", token: "token"], "mavis", "things")
   end
 
   test "returning prs" do
@@ -31,7 +31,7 @@ defmodule Libexample.RealGithubClientTest do
             [
               %{requester: "rita", title: "pr 1", url: "http://github/somepr1"},
               %{requester: "sue", title: "pr 2", url: "http://github/somepr2"}
-            ]} == RealGithubClient.list_pull_requests({"bob", "token"}, "mavis", "things")
+            ]} == RealGithubClient.list_pull_requests([user: "bob", token: "token"], "mavis", "things")
   end
 
   test "wrong status" do
@@ -40,6 +40,6 @@ defmodule Libexample.RealGithubClientTest do
     end)
 
     assert {:error, %{status_code: 404}} =
-      RealGithubClient.list_pull_requests({"", ""}, "mavis", "things")
+             RealGithubClient.list_pull_requests([user: "", token: ""], "mavis", "things")
   end
 end

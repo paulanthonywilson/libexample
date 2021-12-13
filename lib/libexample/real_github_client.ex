@@ -2,15 +2,19 @@ defmodule Libexample.RealGithubClient do
   @moduledoc """
   Simple api client for Github, for example purposes only
   """
+  @behaviour Libexample.GithubClient
 
   @httpoison Application.compile_env(:libexample, HTTPoison, HTTPoison)
 
-  @doc """
-  As per tin, uses the access token to list the pull requests for a repository
+  @impl true
+  def list_pull_requests(config, owner, repository) do
+    user = Keyword.fetch!(config, :user)
+    token = Keyword.fetch!(config, :token)
+    do_list_pull_requests({user, token}, owner, repository)
+  end
 
 
-  """
-  def list_pull_requests({_user, _token} = auth, owner, repository) do
+  defp do_list_pull_requests(auth, owner, repository) do
     path = Path.join(["https://api.github.com", "repos", owner, repository, "pulls"])
 
     options = [hackney: [basic_auth: auth]]
