@@ -3,16 +3,24 @@ defmodule Libexample do
   Documentation for `Libexample`.
   """
 
-  @doc """
-  Hello world.
+  defmacro __using__(opts) do
+    otp_app = Keyword.fetch!(opts, :otp_app)
 
-  ## Examples
+    quote do
+      @behaviour Libexample
+      def list_pull_requests(owner, repository) do
+        Libexample.RealGithubClient.list_pull_requests({user(), token()}, owner, repository)
+      end
 
-      iex> Libexample.hello()
-      :world
+      defp token, do: Keyword.fetch!(config(), :token)
+      defp user, do: Keyword.fetch!(config(), :user)
 
-  """
-  def hello do
-    :world
+      defp config do
+        config = Application.fetch_env!(unquote(otp_app), __MODULE__)
+      end
+    end
   end
+
+  @callback list_pull_requests(owner :: String.t(), repository :: String.t()) ::
+              {:ok, list()} | {:error, term}
 end
